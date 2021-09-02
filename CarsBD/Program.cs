@@ -1,4 +1,5 @@
 ﻿using CarsBD.EF;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 
@@ -10,12 +11,17 @@ namespace CarsBD
         {
             using(var context = new MyContext(connectionString: "Data Source=OMEN;Initial Catalog=CarsDB;Integrated Security=true;"))
             {
-                var myCars = context.Cars.Select(it => it.Brand).ToList();
+                var centers = context.ServiceJobs.Include(navigationPropertyPath: it => it.ServiceCenter).
+                                                    Include(navigationPropertyPath: it => it.Car).ToList();
 
-                foreach(var carBrand in myCars)
+                
+
+                foreach(var c in centers)
                 {
-                    Console.WriteLine(carBrand);
+                    Console.WriteLine($"{c.ServiceCenter.Name} - {c.Car.Brand}");
                 }
+
+                
                 Console.ReadKey();
             }
         }
