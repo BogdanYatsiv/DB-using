@@ -11,6 +11,8 @@ namespace CarsBD
         {
             using(var context = new MyContext(connectionString: "Data Source=OMEN;Initial Catalog=NewCarsDB;Integrated Security=true;"))
             {
+                context.Database.Migrate();
+
                 var centers = context.ServiceJobs.Include(navigationPropertyPath: it => it.ServiceCenter).
                                                     Include(navigationPropertyPath: it => it.Car).ToList();
 
