@@ -9,7 +9,7 @@ namespace CarsBD
     {
         static void Main(string[] args)
         {
-            using(var context = new MyContext(connectionString: "Data Source=OMEN;Initial Catalog=CarsDB;Integrated Security=true;"))
+            using(var context = new MyContext(connectionString: "Data Source=OMEN;Initial Catalog=NewCarsDB;Integrated Security=true;"))
             {
                 var centers = context.ServiceJobs.Include(navigationPropertyPath: it => it.ServiceCenter).
                                                     Include(navigationPropertyPath: it => it.Car).ToList();

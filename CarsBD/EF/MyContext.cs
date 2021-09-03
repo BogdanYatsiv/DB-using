@@ -12,7 +12,7 @@ namespace CarsBD.EF
         private readonly string _connectionString;
         public MyContext()
         {
-            _connectionString = "Data Source=OMEN;Initial Catalog=CarsDB;Integrated Security=true;";
+            _connectionString = "Data Source=OMEN;Initial Catalog=NewCarsDB;Integrated Security=true;";
         }
         public MyContext(string connectionString)
         {
