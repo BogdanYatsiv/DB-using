@@ -1,6 +1,7 @@
 ﻿using CarsBD.EF;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CarsBD
@@ -13,18 +14,54 @@ namespace CarsBD
             {
                 context.Database.Migrate();
 
-                var centers = context.ServiceJobs.Include(navigationPropertyPath: it => it.ServiceCenter).
-                                                    Include(navigationPropertyPath: it => it.Car).ToList();
+                var sal = context.Sales.Include(navigationPropertyPath: it => it.Car).
+                    Include(navigationPropertyPath: it => it.Store).ToList();
+
+                Console.WriteLine("Sales:");
+                foreach(var s in sal)
+                {
+                    Console.WriteLine($"{s.Car.Brand} - {s.Price} by {s.Store.Name} date: {s.Date}");
+                }
+                Console.ReadKey();
+                Console.WriteLine();
 
                 
+                var jobs = context.ServiceJobs.Include(navigationPropertyPath: it=> it.Car).
+                    Include(navigationPropertyPath: it => it.ServiceCenter).ToList();
 
-                foreach(var c in centers)
+                Console.WriteLine("Service Jobs:");
+                foreach (var j in jobs)
                 {
-                    Console.WriteLine($"{c.ServiceCenter.Name} - {c.Car.Brand}");
+                    Console.WriteLine($"{j.ServiceCenter.Name} - {j.Car.Brand}");
+                }
+                Console.ReadKey();
+                Console.WriteLine();
+
+                var serviceCenters = context.ServiceJobs.Include(navigationPropertyPath: sj => sj.Car.Sales).AsEnumerable().GroupBy(sj => sj.ServiceCenter.Name);
+                Dictionary<string, int> servicePrice = new();
+
+
+                foreach(var sc in serviceCenters)
+                {
+                    int maxPrice = 0;
+
+                    foreach(var car in sc)
+                    {
+                        var sales = car.Car.Sales.ToList();
+                        foreach (var s in sales)
+                        {
+                            if (s.Price > maxPrice) maxPrice = (int)s.Price;
+                        }
+                    }
+                    servicePrice.Add(sc.Key, maxPrice);
                 }
 
-                
-                Console.ReadKey();
+                Console.WriteLine("Service centers that serve cars that are sold by most price desc:");
+                servicePrice.OrderByDescending(s => s.Value);
+                foreach (var sp in servicePrice)
+                {
+                    Console.WriteLine($"{sp.Key} - {sp.Value}");
+                }
             }
         }
     }
