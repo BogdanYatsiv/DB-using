@@ -37,15 +37,24 @@ namespace CarsBD
                 Console.ReadKey();
                 Console.WriteLine();
 
-                var serviceCenters = context.ServiceJobs.Include(navigationPropertyPath: sj => sj.Car.Sales).
-                    AsEnumerable().GroupBy(sj => sj.ServiceCenter.Name).
-                    Select(sc => new { 
-                        Name = sc.Key, 
-                        Price = sc.Select(s => s.Car.Sales.Max(car => car.Price).Value).First()
-                    });
-                Dictionary<string, int> servicePrice = new();
+                //var serviceCenters = context.ServiceJobs.Include(navigationPropertyPath: sj => sj.Car.Sales).
+                //    AsEnumerable().GroupBy(sj => sj.ServiceCenter.Name).
+                //    Select(sc => new { 
+                //        Name = sc.Key, 
+                //        Price = sc.Select(s => s.Car.Sales.Max(car => car.Price).Value).First()
+                //    });
 
 
+
+                var servicePrice = from sj in context.Set<ServiceJob>()
+                                   join s in context.Set<Sale>()
+                                   on sj.car_id equals s.car_id
+                                   select new { Service = sj.ServiceCenter.Name, Car = sj.Car.Brand, Price = s.Price };
+
+                var sortedServices = from sc in servicePrice
+                                     group sc by sc.Service into g
+                                     select new { Name = g.Key, Price = g.Max(s => s.Price) };
+                
                 //foreach(var sc in serviceCenters)
                 //{
                 //    int maxPrice = 0;
@@ -53,7 +62,8 @@ namespace CarsBD
                 //    foreach(var car in sc)
                 //    {
                 //        var sales = car.Car.Sales.ToList();
-                //        foreach (var s in sales)
+                //        foreach (var s in sales)S
+
                 //        {
                 //            if (s.Price > maxPrice) maxPrice = (int)s.Price;
                 //        }
@@ -62,15 +72,15 @@ namespace CarsBD
                 //}
 
                 Console.WriteLine("Service centers that serve cars that are sold by most price desc:");
-                foreach(var sc in serviceCenters)
+                foreach(var s in sortedServices.OrderByDescending(ss => ss.Price))
                 {
-                    Console.WriteLine($"{sc.Name} - {sc.Price}");
+                    Console.WriteLine($"{s.Name} - {s.Price}");
                 }
-                //servicePrice.OrderByDescending(s => s.Value);
-                //foreach (var sp in servicePrice)
+                //foreach(var sc in serviceCenters)
                 //{
-                //    Console.WriteLine($"{sp.Key} - {sp.Value}");
+                //    Console.WriteLine($"{sc.Name} - {sc.Price}");
                 //}
+                
             }
         }
     }
