@@ -6,6 +6,15 @@ using System.Linq;
 
 namespace CarsBD
 {
+    //Create sql script that will:
+    //1. Generate tables and fill them with data: 
+	// Stores,
+    // Cars(must have: brand, basePrice),
+    // Service centers,
+    // Service jobs(what centers work with what brands),
+	// Sales(when what car was sold by which price)
+    //2. Show on screen: 
+    // service centers that serve cars that are sold by most price desc
     class Program
     {
         static void Main(string[] args)
