@@ -22,9 +22,7 @@ namespace CarsBD
                 {
                     Console.WriteLine($"{s.Car.Brand} - {s.Price} by {s.Store.Name} date: {s.Date}");
                 }
-                Console.ReadKey();
                 Console.WriteLine();
-
 
                 var jobs = context.ServiceJobs.Include(navigationPropertyPath: it=> it.Car).
                     Include(navigationPropertyPath: it => it.ServiceCenter).ToList();
@@ -34,7 +32,6 @@ namespace CarsBD
                 {
                     Console.WriteLine($"{j.ServiceCenter.Name} - {j.Car.Brand}");
                 }
-                Console.ReadKey();
                 Console.WriteLine();
 
                 var centers = context.ServiceJobs.Join(context.Sales, sj => sj.car_id, s => s.car_id,
@@ -42,16 +39,6 @@ namespace CarsBD
                                                     GroupBy(services => services.service).
                                                     Select(it => new { service = it.Key, price = it.Max(s => s.price) }).
                                                     OrderByDescending(it => it.price);
-                    
-                
-                var servicePrice = from sj in context.Set<ServiceJob>()
-                                   join s in context.Set<Sale>()
-                                   on sj.car_id equals s.car_id
-                                   select new { Service = sj.ServiceCenter.Name, Car = sj.Car.Brand, Price = s.Price };
-
-                var sortedServices = from sc in servicePrice
-                                     group sc by sc.Service into g
-                                     select new { Name = g.Key, Price = g.Max(s => s.Price) };
 
                 Console.WriteLine("Service centers that serve cars that are sold by most price desc:");
                 foreach(var s in centers)
